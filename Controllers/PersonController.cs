@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ormTARpv23.Data;
 using ormTARpv23.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,102 +17,69 @@ namespace ormTARpv23.Controllers
             _context = context;
         }
 
+        // GET: /Person
         [HttpGet]
-        public List<Person> GetPeople()
+        public ActionResult<List<Person>> GetPeople()
         {
-            return _context.Persons
-                .Include(p => p.Document)
-                .Include(p => p.ContactData)
-                .ToList();
+            return Ok(_context.Persons.ToList());
         }
 
-        [HttpPost]
-        public List<Person> PostPerson([FromBody] Person person)
-        {
-            _context.Persons.Add(person);
-            _context.SaveChanges();
-            return _context.Persons
-                .Include(p => p.Document)
-                .Include(p => p.ContactData)
-                .ToList();
-        }
-
-        [HttpDelete("{id}")]
-        public List<Person> DeletePerson(int id)
-        {
-            var person = _context.Persons.Find(id);
-
-            if (person == null)
-            {
-                return _context.Persons.ToList();
-            }
-
-            _context.Persons.Remove(person);
-            _context.SaveChanges();
-            return _context.Persons.ToList();
-        }
-
-        [HttpDelete("/kustuta2/{id}")]
-        public IActionResult DeletePerson2(int id)
-        {
-            var person = _context.Persons.Find(id);
-
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            _context.Persons.Remove(person);
-            _context.SaveChanges();
-            return NoContent();
-        }
-
+        // GET: /Person/{id}
         [HttpGet("{id}")]
         public ActionResult<Person> GetPerson(int id)
         {
-            var person = _context.Persons
-                .Include(p => p.Document)
-                .Include(p => p.ContactData)
-                .FirstOrDefault(p => p.Id == id);
+            var person = _context.Persons.FirstOrDefault(p => p.Id == id);
 
             if (person == null)
-            {
                 return NotFound();
-            }
 
-            return person;
+            return Ok(person);
         }
 
+        // POST: /Person
+        [HttpPost]
+        public ActionResult<List<Person>> PostPerson([FromBody] Person person)
+        {
+            _context.Persons.Add(person);
+            _context.SaveChanges();
+
+            return Ok(_context.Persons.ToList());
+        }
+
+        // PUT: /Person/{id}
         [HttpPut("{id}")]
         public ActionResult<List<Person>> PutPerson(int id, [FromBody] Person updatedPerson)
         {
-            var person = _context.Persons
-                .Include(p => p.Document)
-                .Include(p => p.ContactData)
-                .FirstOrDefault(p => p.Id == id);
+            var person = _context.Persons.FirstOrDefault(p => p.Id == id);
 
             if (person == null)
-            {
                 return NotFound();
-            }
 
             person.PersonCode = updatedPerson.PersonCode;
             person.FirstName = updatedPerson.FirstName;
             person.LastName = updatedPerson.LastName;
             person.Password = updatedPerson.Password;
             person.Admin = updatedPerson.Admin;
-            person.DocumentId = updatedPerson.DocumentId;
-            person.Document = updatedPerson.Document;
-            person.ContactDataId = updatedPerson.ContactDataId;
-            person.ContactData = updatedPerson.ContactData;
 
             _context.Persons.Update(person);
             _context.SaveChanges();
 
-            return Ok(_context.Persons
-                .Include(p => p.Document)
-                .Include(p => p.ContactData)
-                .ToList());
+            return Ok(_context.Persons.ToList());
+        }
+
+        // DELETE: /Person/{id}
+        [HttpDelete("{id}")]
+        public ActionResult<List<Person>> DeletePerson(int id)
+        {
+            var person = _context.Persons.FirstOrDefault(p => p.Id == id);
+
+            if (person == null)
+                return NotFound();
+
+            _context.Persons.Remove(person);
+            _context.SaveChanges();
+
+            return Ok(_context.Persons.ToList());
         }
     }
 }

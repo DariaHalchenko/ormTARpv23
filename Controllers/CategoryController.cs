@@ -5,7 +5,7 @@ using ormTARpv23.Models;
 
 namespace ormTARpv23.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
@@ -76,22 +76,6 @@ namespace ormTARpv23.Controllers
             _context.SaveChanges();
 
             return _context.Categorys.ToList();
-        }
-
-        // DELETE: /kustuta2/{id}
-        [HttpDelete("/kustuta2/{id}")]
-        public IActionResult DeleteCategory2(int id)
-        {
-            var category = _context.Categorys.Find(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _context.Categorys.Remove(category);
-            _context.SaveChanges();
-
-            return NoContent();
         }
     }
 }

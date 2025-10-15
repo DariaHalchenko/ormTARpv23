@@ -3,7 +3,6 @@ using ormTARpv23.Data;
 using ormTARpv23.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace ormTARpv23.Controllers
 {
@@ -18,42 +17,58 @@ namespace ormTARpv23.Controllers
             _context = context;
         }
 
+        // GET: /ContactData
         [HttpGet]
-        public List<ContactData> GetContactDatas()
+        public ActionResult<List<ContactData>> GetContactDatas()
         {
-            return _context.ContactDatas.ToList();
+            var contactDatas = _context.ContactDatas.ToList();
+            return Ok(contactDatas);
         }
 
+        // GET: /ContactData/{id}
         [HttpGet("{id}")]
         public ActionResult<ContactData> GetContactData(int id)
         {
-            var contactData = _context.ContactDatas.Find(id);
-
+            var contactData = _context.ContactDatas.FirstOrDefault(c => c.Id == id);
             if (contactData == null)
                 return NotFound();
 
-            return contactData;
+            return Ok(contactData);
         }
 
+        // POST: /ContactData
         [HttpPost]
-        public List<ContactData> PostContactData([FromBody] ContactData contactData)
+        public ActionResult<List<ContactData>> PostContactData([FromBody] ContactData contactData)
         {
+            // Проверка существования Person
+            var personExists = _context.Persons.Any(p => p.Id == contactData.PersonId);
+            if (!personExists)
+                return BadRequest($"Person with Id {contactData.PersonId} does not exist.");
+
             _context.ContactDatas.Add(contactData);
             _context.SaveChanges();
-            return _context.ContactDatas.ToList();
+
+            var contactDatas = _context.ContactDatas.ToList();
+            return Ok(contactDatas);
         }
 
+
+        // PUT: /ContactData/{id}
         [HttpPut("{id}")]
         public ActionResult<List<ContactData>> PutContactData(int id, [FromBody] ContactData updatedContactData)
         {
             var contactData = _context.ContactDatas.Find(id);
-
             if (contactData == null)
                 return NotFound();
 
+            // Проверка существования Person
+            var personExists = _context.Persons.Any(p => p.Id == updatedContactData.PersonId);
+            if (!personExists)
+                return BadRequest($"Person with Id {updatedContactData.PersonId} does not exist.");
+
             contactData.Address = updatedContactData.Address;
             contactData.Phone = updatedContactData.Phone;
-            contactData.Person = updatedContactData.Person;
+            contactData.PersonId = updatedContactData.PersonId;
 
             _context.ContactDatas.Update(contactData);
             _context.SaveChanges();
@@ -61,32 +76,20 @@ namespace ormTARpv23.Controllers
             return Ok(_context.ContactDatas.ToList());
         }
 
+
+        // DELETE: /ContactData/{id}
         [HttpDelete("{id}")]
-        public List<ContactData> DeleteContactData(int id)
+        public ActionResult<List<ContactData>> DeleteContactData(int id)
         {
             var contactData = _context.ContactDatas.Find(id);
-
-            if (contactData == null)
-                return _context.ContactDatas.ToList();
-
-            _context.ContactDatas.Remove(contactData);
-            _context.SaveChanges();
-
-            return _context.ContactDatas.ToList();
-        }
-
-        [HttpDelete("/kustutaContactData/{id}")]
-        public IActionResult DeleteContactDataAlt(int id)
-        {
-            var contactData = _context.ContactDatas.Find(id);
-
             if (contactData == null)
                 return NotFound();
 
             _context.ContactDatas.Remove(contactData);
             _context.SaveChanges();
 
-            return NoContent();
+            var contactDatas = _context.ContactDatas.ToList();
+            return Ok(contactDatas);
         }
     }
 }

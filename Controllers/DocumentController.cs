@@ -36,28 +36,37 @@ namespace ormTARpv23.Controllers
         }
 
         [HttpPost]
-        public List<Document> PostDocument([FromBody] Document document)
+        public ActionResult<List<Document>> PostDocument([FromBody] Document document)
         {
+            // Проверяем наличие Person
+            var personExists = _context.Persons.Any(p => p.Id == document.PersonId);
+            if (!personExists)
+                return BadRequest($"Person with Id {document.PersonId} does not exist.");
+
             _context.Documents.Add(document);
             _context.SaveChanges();
-            return _context.Documents.ToList();
+            return Ok(_context.Documents.ToList());
         }
 
         [HttpPut("{id}")]
         public ActionResult<List<Document>> PutDocument(int id, [FromBody] Document updatedDocument)
         {
             var document = _context.Documents.Find(id);
-
             if (document == null)
                 return NotFound();
 
-            document.Document_type = updatedDocument.Document_type;
+            // Проверяем наличие Person
+            var personExists = _context.Persons.Any(p => p.Id == updatedDocument.PersonId);
+            if (!personExists)
+                return BadRequest($"Person with Id {updatedDocument.PersonId} does not exist.");
+
+            document.DocumentType = updatedDocument.DocumentType;
             document.Number = updatedDocument.Number;
             document.Country = updatedDocument.Country;
             document.IssueDate = updatedDocument.IssueDate;
             document.ExpiryDate = updatedDocument.ExpiryDate;
             document.IssueCountry = updatedDocument.IssueCountry;
-            document.Person = updatedDocument.Person;
+            document.PersonId = updatedDocument.PersonId;
 
             _context.Documents.Update(document);
             _context.SaveChanges();

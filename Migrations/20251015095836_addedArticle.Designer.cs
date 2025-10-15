@@ -12,8 +12,8 @@ using ormTARpv23.Data;
 namespace ormTARpv23.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251014095621_addedPerson")]
-    partial class addedPerson
+    [Migration("20251015095836_addedArticle")]
+    partial class addedArticle
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,9 @@ namespace ormTARpv23.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -181,7 +184,7 @@ namespace ormTARpv23.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Document_type")
+                    b.Property<string>("DocumentType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -198,6 +201,9 @@ namespace ormTARpv23.Migrations
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -242,12 +248,6 @@ namespace ormTARpv23.Migrations
                     b.Property<bool>("Admin")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ContactDataId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DocumentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -265,12 +265,6 @@ namespace ormTARpv23.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContactDataId")
-                        .IsUnique();
-
-                    b.HasIndex("DocumentId")
-                        .IsUnique();
 
                     b.ToTable("Persons");
                 });
@@ -306,6 +300,82 @@ namespace ormTARpv23.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ormTARpv23.Models.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("ormTARpv23.Models.Subject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Credits")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("ormTARpv23.Models.Teacher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("ormTARpv23.Models.Author", b =>
@@ -346,40 +416,9 @@ namespace ormTARpv23.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("ormTARpv23.Models.Person", b =>
-                {
-                    b.HasOne("ormTARpv23.Models.ContactData", "ContactData")
-                        .WithOne("Person")
-                        .HasForeignKey("ormTARpv23.Models.Person", "ContactDataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ormTARpv23.Models.Document", "Document")
-                        .WithOne("Person")
-                        .HasForeignKey("ormTARpv23.Models.Person", "DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ContactData");
-
-                    b.Navigation("Document");
-                });
-
             modelBuilder.Entity("ormTARpv23.Models.Article", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("ormTARpv23.Models.ContactData", b =>
-                {
-                    b.Navigation("Person")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ormTARpv23.Models.Document", b =>
-                {
-                    b.Navigation("Person")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ormTARpv23.Models.Order", b =>

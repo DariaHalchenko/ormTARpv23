@@ -78,21 +78,5 @@ namespace ormTARpv23.Controllers
 
             return _context.CartProducts.ToList();
         }
-
-        // DELETE: /kustuta2/{id}
-        [HttpDelete("/kustuta2/{id}")]
-        public IActionResult DeleteCartProduct2(int id)
-        {
-            var cartProduct = _context.CartProducts.Find(id);
-            if (cartProduct == null)
-            {
-                return NotFound();
-            }
-
-            _context.CartProducts.Remove(cartProduct);
-            _context.SaveChanges();
-
-            return NoContent();
-        }
     }
 }

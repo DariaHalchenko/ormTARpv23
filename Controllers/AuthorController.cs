@@ -27,13 +27,17 @@ namespace ormTARpv23.Controllers
         [HttpPost]
         public List<Author> PostAuthor([FromBody] Author author)
         {
-            _context.ContactDatas.Add(author.Contact);
-            _context.SaveChanges();
+            if (author.Contact != null)
+            {
+                _context.ContactDatas.Add(author.Contact);
+                _context.SaveChanges();
 
-            author.ContactDataId = author.Contact.Id;
+                author.ContactDataId = author.Contact.Id;
+            }
 
             _context.Authors.Add(author);
             _context.SaveChanges();
+
             return _context.Authors.Include(a => a.Contact).ToList();
         }
 

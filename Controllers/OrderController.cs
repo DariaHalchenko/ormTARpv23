@@ -90,19 +90,5 @@ namespace ormTARpv23.Controllers
 
             return _context.Orders.ToList();
         }
-
-        [HttpDelete("/kustutaOrder/{id}")]
-        public IActionResult DeleteOrderAlt(int id)
-        {
-            var order = _context.Orders.Find(id);
-
-            if (order == null)
-                return NotFound();
-
-            _context.Orders.Remove(order);
-            _context.SaveChanges();
-
-            return NoContent();
-        }
     }
 }
